@@ -18,6 +18,7 @@ module OpenTelemetry
       # Propagates context in carriers in the xray single header format
       class TextMapPropagator
         XRAY_CONTEXT_KEY = 'X-Amzn-Trace-Id'
+        HTTP_XRAY_CONTEXT_KEY = 'HTTP_X_AMZN_TRACE_ID'
         XRAY_CONTEXT_REGEX = /\ARoot=(?<trace_id>([a-z0-9\-]{35}))(?:;Parent=(?<span_id>([a-z0-9]{16})))?(?:;Sampled=(?<sampling_state>[01d](?![0-9a-f])))?(?:;(?<trace_state>.*))?\Z/.freeze
         SAMPLED_VALUES = %w[1 d].freeze
         FIELDS = [XRAY_CONTEXT_KEY].freeze
@@ -37,7 +38,7 @@ module OpenTelemetry
         # @return [Context] context updated with extracted baggage, or the original context
         #   if extraction fails
         def extract(carrier, context: Context.current, getter: Context::Propagation.text_map_getter)
-          header = getter.get(carrier, XRAY_CONTEXT_KEY)
+          header = getter.get(carrier, XRAY_CONTEXT_KEY) || getter.get(carrier, HTTP_XRAY_CONTEXT_KEY)
           return context unless header
 
           match = parse_header(header)
