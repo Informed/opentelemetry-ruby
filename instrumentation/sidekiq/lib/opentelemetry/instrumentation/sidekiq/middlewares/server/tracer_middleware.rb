@@ -19,7 +19,8 @@ module OpenTelemetry
                 'messaging.message_id' => msg['jid'],
                 'messaging.destination' => msg['queue'],
                 'messaging.destination_kind' => 'queue',
-                'messaging.operation' => 'process'
+                'messaging.operation' => 'process',
+                'messaging.sidekiq.args' => msg['args'].map(&:to_s)
               }
               attributes['peer.service'] = config[:peer_service] if config[:peer_service]
 
